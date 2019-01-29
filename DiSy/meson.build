@@ -7,7 +7,7 @@ project('DiSy', 'cpp',
 thread_dep = dependency('threads')
 
 # FS lib
-add_project_link_arguments(['-lstdc++fs'], language : 'cpp')
+add_project_link_arguments(['-lstdc++fs', '-lssl', '-lcrypto'], language : 'cpp')
 
 # # begin asio: https://think-async.com/Asio/
 # add_global_arguments('-I' + get_option('asio_include_dir'), language : 'cpp')
@@ -37,17 +37,17 @@ grpcpp_dep = dependency('grpc++', required : true)
 
 gen = generator(protoc, \
   output    : ['@BASENAME@.pb.cc', '@BASENAME@.pb.h', '@BASENAME@.grpc.pb.cc', '@BASENAME@.grpc.pb.h'],
-  arguments : ['--proto_path=@SOURCE_DIR@/src', '--plugin=protoc-gen-grpc=' + grpc_cpp_plugin.path(), '--grpc_out=@BUILD_DIR@', '--cpp_out=@BUILD_DIR@', '@PLAINNAME@'])
+  arguments : ['--proto_path=@SOURCE_DIR@/src/protos', '--plugin=protoc-gen-grpc=' + grpc_cpp_plugin.path(), '--grpc_out=@BUILD_DIR@', '--cpp_out=@BUILD_DIR@', '@PLAINNAME@'])
 
 # change proto file accordingly
-# helloworld = gen.process('src/helloworld.proto')
+DiSy = gen.process('src/protos/DiSy.proto')
 # end protobuf
 
 # subdir('SUBDIR1')
 
 inc_dir = include_directories('include')
-server_src = ['src/server/main.cpp']
-client_src = ['src/client/main.cpp']
+server_src = ['src/server/main.cpp', 'src/server/server.cpp', DiSy]
+client_src = ['src/client/main.cpp', DiSy]
 
 executable('server',
            sources : server_src,
@@ -58,5 +58,5 @@ executable('server',
 executable('client',
            sources : client_src,
            include_directories : inc_dir,
-           dependencies : [thread_dep, protobuf_dep]
+           dependencies : [thread_dep, protobuf_dep, grpc_dep, grpcpp_dep]
           )
