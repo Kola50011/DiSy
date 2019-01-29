@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package DiSy;
+
+message FileMetadata {
+    string relative_path = 1;
+    int64 last_modified_time = 2;
+    string hash = 3;
+}
+
+message DirectoryMetadata {
+    string relative_path = 1;
+}
+
+message DirTree {
+	repeated DirectoryMetadata directories = 1;
+	repeated FileMetadata files = 2;
+}
+
+
+message ConnectionRequest {
+    int64 time = 1;
+}
+
+message ConnectionResponse {
+    bool successful = 1;
+}
+
+service Server {
+    rpc Connect(ConnectionRequest) returns (ConnectionResponse) {}
+}
+
+service Client {
+
+}
