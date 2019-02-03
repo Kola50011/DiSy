@@ -2,12 +2,17 @@
 
 #include <grpcpp/grpcpp.h>
 
-#include "DiSy.pb.h"
 #include "DiSy.grpc.pb.h"
+#include "DiSy.pb.h"
 
 class Server final : public DiSy::Server::Service
 {
-  public:
-    grpc::Status Connect(grpc::ServerContext *context, const DiSy::ConnectionRequest *connectionRequest,
-                         const DiSy::ConnectionResponse *connectionResponse) override;
+private:
+  DiSy::DirTree currentDirTree;
+
+public:
+  DiSy::DirTree getDifferenceAndSetState(DiSy::DirTree dirTree);
+
+  grpc::Status Update(grpc::ServerContext *context, const DiSy::UpdateRequest *updateRequest,
+                      DiSy::UpdateResponse *updateResponse) override;
 };

@@ -21,22 +21,23 @@ DiSy::DirTree *crawlDirectory(std::string path)
     {
         if (!fs::is_directory(p))
         {
-            DiSy::FileMetadata *fileMetadata = dirTree->add_files();
-
             struct stat fileStats;
             stat(p.path().string().c_str(), &fileStats);
 
-            fileMetadata->set_relative_path(p.path().string().substr(pathSize));
-            fileMetadata->set_hash(hashing::getFileHash(p.path().string().c_str()));
-            fileMetadata->set_last_modified_time(fileStats.st_mtime);
+            DiSy::FileMetadata fileMetadata;
+            fileMetadata.set_relative_path(p.path().string().substr(pathSize));
+            fileMetadata.set_hash(hashing::getFileHash(p.path().string().c_str()));
+            fileMetadata.set_last_modified_time(fileStats.st_mtime);
+
+            (*dirTree->mutable_files())[fileMetadata.relative_path()] = fileMetadata;
         }
         else
         {
-            DiSy::DirectoryMetadata *directoryMetadata = dirTree->add_directories();
-            directoryMetadata->set_relative_path(p.path().string().substr(pathSize));
+            DiSy::DirectoryMetadata directoryMetadata;
+            directoryMetadata.set_relative_path(p.path().string().substr(pathSize));
+            (*dirTree->mutable_directories())[directoryMetadata.relative_path()] = directoryMetadata;
         }
     }
-
     return dirTree;
 }
 } // namespace crawler
