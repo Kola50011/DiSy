@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package DiSy;
 
+message Directory {
+    string relative_path = 1;
+}
+
 message DirectoryMetadata {
     string relative_path = 1;
 }
@@ -25,7 +29,12 @@ message UpdateRequest {
 
 message UpdateResponse {
     DirTree uploads = 1;
-    DirTree downloads = 2;
+    bool get_directories = 2;
+    bool get_files = 3;
+}
+
+message GetRequest {
+    int64 client_id = 1;
 }
 
 message Empty{
@@ -38,4 +47,10 @@ message GetNewIdResponse {
 service Server {
     rpc GetNewId(Empty) returns (GetNewIdResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
+
+    rpc GetDirectories(GetRequest) returns (stream Directory);
+    rpc GetFiles(GetRequest) returns (stream Directory);
+
+    rpc SendDirectories(stream Directory) returns (Empty);
+    rpc SendFiles(stream Directory) returns (Empty);
 }

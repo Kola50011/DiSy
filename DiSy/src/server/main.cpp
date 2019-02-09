@@ -12,8 +12,16 @@ int main(int argc, char const *argv[])
     CLI ::App app{"DiSy server"};
 
     string address{"0.0.0.0:8080"};
+    bool debug{false};
     app.add_option("-a,--addres", address, "Server address");
+    app.add_flag("-d", debug, "debug messages");
+
     CLI11_PARSE(app, argc, argv);
+
+    if (debug)
+    {
+        spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    }
 
     Server server;
     grpc::ServerBuilder serverBuilder;

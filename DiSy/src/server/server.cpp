@@ -9,35 +9,16 @@
 
 using namespace std;
 
-DiSy::DirTree Server::getDifferenceAndSetState(DiSy::DirTree clientDirTree)
+bool areEqual(DiSy::DirectoryMetadata &firstDirectory, DiSy::DirectoryMetadata &secondDirectory)
 {
-    vector<DiSy::DirectoryMetadata> directoryRequests;
-    vector<DiSy::DirectoryMetadata> directorySends;
-
-    for (auto &clientPair : clientDirTree.directories())
+    if (firstDirectory.relative_path() == secondDirectory.relative_path())
     {
-        // Dir on client but not on server
-        if (serverDirTree.directories().find(clientPair.first) == serverDirTree.directories().end())
-        {
-            (*serverDirTree.mutable_directories())[clientPair.second.relative_path()] = clientPair.second;
-        }
+        return true;
     }
-
-    for (auto &serverPair : serverDirTree.directories())
-    {
-        // Dir on server but not on client
-        if (clientDirTree.directories().find(serverPair.first) == clientDirTree.directories().end())
-        {
-            directoryRequests.push_back(serverPair.second);
-        }
-    }
-
-    cout << serverDirTree.DebugString() << endl;
-
-    return DiSy::DirTree{};
+    return false;
 }
 
-bool checkClientApproved(const DiSy::UpdateRequest *updateRequest)
+bool Server::checkClientApproved(const DiSy::UpdateRequest *updateRequest)
 {
     uint32_t currentServerTime = shared::getCurrentTime();
     uint32_t currentClientTime = updateRequest->time();
@@ -52,16 +33,64 @@ bool checkClientApproved(const DiSy::UpdateRequest *updateRequest)
     }
 }
 
+void Server::processUpdate(const DiSy::UpdateRequest *updateRequest,
+                           DiSy::UpdateResponse *updateResponse)
+{
+    if (!updateResponse)
+    {
+        return;
+    }
+
+    vector<DiSy::DirectoryMetadata> directoryRequests;
+    auto clientDirTree = updateRequest->dir_tree();
+
+    for (auto &clientPair : clientDirTree.directories())
+    {
+        // Dir on client but not on server
+        if (serverDirTree.directories().find(clientPair.first) == serverDirTree.directories().end())
+        {
+            console->debug("New folder on server: {}", clientPair.second.relative_path());
+            (*serverDirTree.mutable_directories())[clientPair.second.relative_path()] = clientPair.second;
+        }
+    }
+
+    for (auto &serverPair : serverDirTree.directories())
+    {
+        // Dir on server but not on client
+        if (clientDirTree.directories().find(serverPair.first) == clientDirTree.directories().end())
+        {
+            console->debug("Folder missing on client {}: {}", updateRequest->client_id(), serverPair.second.relative_path());
+            directoryRequests.push_back(serverPair.second);
+        }
+    }
+}
+
+bool Server::isDirectoryRequested(DiSy::DirectoryMetadata directoryToCheck)
+{
+    for (auto &requestPair : directoryRequests)
+    {
+        for (auto directoyMetadata : requestPair.second)
+        {
+            if (areEqual(directoryToCheck, directoyMetadata))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 grpc::Status Server::Update(grpc::ServerContext *context, const DiSy::UpdateRequest *updateRequest,
                             DiSy::UpdateResponse *updateResponse)
 {
-    cout << context->peer() << endl;
-    // cout << updateRequest->DebugString() << endl;
-    cout << updateResponse->DebugString() << endl;
-    cout << getDifferenceAndSetState(updateRequest->dir_tree()).DebugString() << endl;
+    if (!context)
+    {
+        return grpc::Status::CANCELLED;
+    }
 
     if (checkClientApproved(updateRequest))
     {
+        processUpdate(updateRequest, updateResponse);
         return grpc::Status::OK;
     }
     else
