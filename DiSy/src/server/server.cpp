@@ -9,12 +9,31 @@
 
 using namespace std;
 
-DiSy::DirTree Server::getDifferenceAndSetState(DiSy::DirTree dirTree)
+DiSy::DirTree Server::getDifferenceAndSetState(DiSy::DirTree clientDirTree)
 {
-    for (auto &pair : dirTree.directories())
+    vector<DiSy::DirectoryMetadata> directoryRequests;
+    vector<DiSy::DirectoryMetadata> directorySends;
+
+    for (auto &clientPair : clientDirTree.directories())
     {
-        cout << pair.first << endl;
+        // Dir on client but not on server
+        if (serverDirTree.directories().find(clientPair.first) == serverDirTree.directories().end())
+        {
+            (*serverDirTree.mutable_directories())[clientPair.second.relative_path()] = clientPair.second;
+        }
     }
+
+    for (auto &serverPair : serverDirTree.directories())
+    {
+        // Dir on server but not on client
+        if (clientDirTree.directories().find(serverPair.first) == clientDirTree.directories().end())
+        {
+            directoryRequests.push_back(serverPair.second);
+        }
+    }
+
+    cout << serverDirTree.DebugString() << endl;
+
     return DiSy::DirTree{};
 }
 
@@ -49,4 +68,16 @@ grpc::Status Server::Update(grpc::ServerContext *context, const DiSy::UpdateRequ
     {
         return grpc::Status::CANCELLED;
     }
+}
+
+grpc::Status Server::GetNewId(grpc::ServerContext *context, const DiSy::Empty *empty,
+                              DiSy::GetNewIdResponse *getNewIdResponse)
+{
+    if (!context || !empty)
+    {
+        return grpc::Status::CANCELLED;
+    }
+    getNewIdResponse->set_id(nextClientId);
+    nextClientId += 1;
+    return grpc::Status::OK;
 }

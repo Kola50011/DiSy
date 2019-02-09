@@ -18,8 +18,9 @@ message DirTree {
 }
 
 message UpdateRequest {
-    int64 time = 1;
-    DirTree dir_tree = 2;
+    int64 client_id = 1;
+    int64 time = 2;
+    DirTree dir_tree = 3;
 }
 
 message UpdateResponse {
@@ -27,6 +28,14 @@ message UpdateResponse {
     DirTree downloads = 2;
 }
 
+message Empty{
+}
+
+message GetNewIdResponse {
+    int64 id = 1;
+}
+
 service Server {
+    rpc GetNewId(Empty) returns (GetNewIdResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
 }

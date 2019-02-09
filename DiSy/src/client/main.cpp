@@ -18,6 +18,14 @@ void eraseSubStr(std::string &mainStr, const std::string &toErase)
     }
 }
 
+int64_t getId(unique_ptr<DiSy::Server::Stub> &stub, grpc::ClientContext &clientContext)
+{
+    DiSy::Empty empty;
+    DiSy::GetNewIdResponse getNewIdResponse;
+    grpc::Status idStatus{stub->GetNewId(&clientContext, empty, &getNewIdResponse)};
+    return getNewIdResponse.id();
+}
+
 int main(int argc, char const *argv[])
 {
     // init
@@ -32,10 +40,18 @@ int main(int argc, char const *argv[])
 
     // Main
     auto channel{grpc::CreateChannel(address, grpc::InsecureChannelCredentials())};
+
     auto stub = DiSy::Server::NewStub(channel);
     grpc::ClientContext clientContext;
 
+    // Get client ID
+    cout << getId(stub, clientContext) << endl;
+    cout << getId(stub, clientContext) << endl;
+    int64_t clientId = getId(stub, clientContext);
+
+    // Update
     DiSy::UpdateRequest updateRequest;
+    updateRequest.set_client_id(clientId);
     updateRequest.set_allocated_dir_tree(crawler::crawlDirectory(path));
     updateRequest.set_time(shared::getCurrentTime());
 
