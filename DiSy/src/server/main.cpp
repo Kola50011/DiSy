@@ -12,9 +12,11 @@ int main(int argc, char const *argv[])
     CLI ::App app{"DiSy server"};
 
     string address{"0.0.0.0:8080"};
+    string path{"default"};
     bool debug{false};
     app.add_option("-a,--addres", address, "Server address");
-    app.add_flag("-d", debug, "debug messages");
+    app.add_option("-d,--dir", path, "Directory to synchronize")->required()->check(CLI::ExistingDirectory);
+    app.add_flag("--debug", debug, "debug messages");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -23,7 +25,8 @@ int main(int argc, char const *argv[])
         spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     }
 
-    Server server;
+    Server server = Server(path);
+
     grpc::ServerBuilder serverBuilder;
     serverBuilder.AddListeningPort(address, grpc::InsecureServerCredentials());
     serverBuilder.RegisterService(&server);

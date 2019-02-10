@@ -6,8 +6,16 @@
 #include "DiSy.grpc.pb.h"
 #include "server/server.hpp"
 #include "shared.hpp"
+#include "shared/crawler.hpp"
+#include "shared/writer.hpp"
 
 using namespace std;
+
+Server::Server(string _path)
+{
+    serverDirTree = crawler::crawlDirectory(_path);
+    path = _path;
+}
 
 bool areEqual(DiSy::DirectoryMetadata &firstDirectory, DiSy::DirectoryMetadata &secondDirectory)
 {
@@ -16,6 +24,18 @@ bool areEqual(DiSy::DirectoryMetadata &firstDirectory, DiSy::DirectoryMetadata &
         return true;
     }
     return false;
+}
+
+grpc::Status Server::GetNewId(grpc::ServerContext *context, const DiSy::Empty *empty,
+                              DiSy::GetNewIdResponse *getNewIdResponse)
+{
+    if (!context || !empty)
+    {
+        return grpc::Status::CANCELLED;
+    }
+    getNewIdResponse->set_id(nextClientId);
+    nextClientId += 1;
+    return grpc::Status::OK;
 }
 
 bool Server::checkClientApproved(const DiSy::UpdateRequest *updateRequest)
@@ -41,43 +61,33 @@ void Server::processUpdate(const DiSy::UpdateRequest *updateRequest,
         return;
     }
 
-    vector<DiSy::DirectoryMetadata> directoryRequests;
+    DiSy::DirTree *uploads = new DiSy::DirTree();
+    DiSy::DirTree *downloads = new DiSy::DirTree();
+
     auto clientDirTree = updateRequest->dir_tree();
 
     for (auto &clientPair : clientDirTree.directories())
     {
         // Dir on client but not on server
-        if (serverDirTree.directories().find(clientPair.first) == serverDirTree.directories().end())
+        if (serverDirTree->directories().find(clientPair.first) == serverDirTree->directories().end())
         {
             console->debug("New folder on server: {}", clientPair.second.relative_path());
-            (*serverDirTree.mutable_directories())[clientPair.second.relative_path()] = clientPair.second;
+            (*uploads->mutable_directories())[clientPair.second.relative_path()] = clientPair.second;
         }
     }
 
-    for (auto &serverPair : serverDirTree.directories())
+    for (auto &serverPair : serverDirTree->directories())
     {
         // Dir on server but not on client
         if (clientDirTree.directories().find(serverPair.first) == clientDirTree.directories().end())
         {
             console->debug("Folder missing on client {}: {}", updateRequest->client_id(), serverPair.second.relative_path());
-            directoryRequests.push_back(serverPair.second);
+            (*downloads->mutable_directories())[serverPair.second.relative_path()] = serverPair.second;
         }
     }
-}
 
-bool Server::isDirectoryRequested(DiSy::DirectoryMetadata directoryToCheck)
-{
-    for (auto &requestPair : directoryRequests)
-    {
-        for (auto directoyMetadata : requestPair.second)
-        {
-            if (areEqual(directoryToCheck, directoyMetadata))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
+    updateResponse->set_allocated_uploads(uploads);
+    updateResponse->set_allocated_downloads(downloads);
 }
 
 grpc::Status Server::Update(grpc::ServerContext *context, const DiSy::UpdateRequest *updateRequest,
@@ -99,14 +109,15 @@ grpc::Status Server::Update(grpc::ServerContext *context, const DiSy::UpdateRequ
     }
 }
 
-grpc::Status Server::GetNewId(grpc::ServerContext *context, const DiSy::Empty *empty,
-                              DiSy::GetNewIdResponse *getNewIdResponse)
+grpc::Status Server::SendDirectory(grpc::ServerContext *context, const DiSy::Directory *directory,
+                                   DiSy::Empty *empty)
 {
     if (!context || !empty)
     {
         return grpc::Status::CANCELLED;
     }
-    getNewIdResponse->set_id(nextClientId);
-    nextClientId += 1;
+
+    writer::writeDirectory(path, directory);
+
     return grpc::Status::OK;
 }

@@ -47,7 +47,7 @@ DiSy = gen.process('src/protos/DiSy.proto')
 
 inc_dir = include_directories('include')
 server_src = ['src/server/main.cpp', 'src/server/server.cpp', DiSy]
-client_src = ['src/client/main.cpp', DiSy]
+client_src = ['src/client/main.cpp', 'src/client/client.cpp', 'src/client/uploader.cpp', DiSy]
 
 executable('server',
            sources : server_src,
