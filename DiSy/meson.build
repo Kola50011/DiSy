@@ -2,7 +2,7 @@
 project('DiSy', 'cpp',
         license : ['Boost'],
         version : '0.1',
-        default_options : ['cpp_std=c++17', 'warning_level=3', 'werror=true'])
+        default_options : ['cpp_std=c++17', 'warning_level=3', 'werror=false'])
 
 thread_dep = dependency('threads')
 
@@ -36,8 +36,14 @@ grpc_dep = dependency('grpc', required : true)
 grpcpp_dep = dependency('grpc++', required : true)
 
 gen = generator(protoc, \
-  output    : ['@BASENAME@.pb.cc', '@BASENAME@.pb.h', '@BASENAME@.grpc.pb.cc', '@BASENAME@.grpc.pb.h'],
-  arguments : ['--proto_path=@SOURCE_DIR@/src/protos', '--plugin=protoc-gen-grpc=' + grpc_cpp_plugin.path(), '--grpc_out=@BUILD_DIR@', '--cpp_out=@BUILD_DIR@', '@PLAINNAME@'])
+  output    : ['@BASENAME@.pb.cc', '@BASENAME@.pb.h', '@BASENAME@.grpc.pb.cc', '@BASENAME@.grpc.pb.h',
+               '@BASENAME@_pb2.py', '@BASENAME@_pb2_grpc.py'],
+  arguments : ['--proto_path=@SOURCE_DIR@/src/protos',
+               '--plugin=protoc-gen-grpc=' + grpc_cpp_plugin.path(),
+        #        '--plugin=protoc-gen-grpc=' + grpc_python_plugin.path(),
+               '--grpc_out=@BUILD_DIR@',
+               '--cpp_out=@BUILD_DIR@',
+               '../src/protos/@PLAINNAME@'])
 
 # change proto file accordingly
 DiSy = gen.process('src/protos/DiSy.proto')
@@ -46,8 +52,8 @@ DiSy = gen.process('src/protos/DiSy.proto')
 # subdir('SUBDIR1')
 
 inc_dir = include_directories('include')
-server_src = ['src/server/main.cpp', 'src/server/server.cpp', DiSy]
-client_src = ['src/client/main.cpp', 'src/client/client.cpp', 'src/client/uploader.cpp', DiSy]
+server_src = [DiSy, 'src/server/main.cpp', 'src/server/server.cpp']
+client_src = [DiSy, 'src/client/main.cpp', 'src/client/client.cpp', 'src/client/uploader.cpp']
 
 executable('server',
            sources : server_src,
