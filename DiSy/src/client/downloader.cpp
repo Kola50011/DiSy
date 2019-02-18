@@ -18,7 +18,7 @@ void Client::downloadDirectories(google::protobuf::Map<string, DiSy::DirectoryMe
 void Client::downloadDirectory(DiSy::DirectoryMetadata &directoryMetadata)
 {
     grpc::ClientContext clientContext;
-    DiSy::Directory &directory;
+    DiSy::Directory directory;
     grpc::Status status{stub->GetDirectory(&clientContext, directoryMetadata, &directory)};
 
     if (status.ok())

@@ -22,6 +22,9 @@ private:
   void uploadDirectories(google::protobuf::Map<std::string, DiSy::DirectoryMetadata> directories);
   void uploadDirectory(DiSy::DirectoryMetadata &directoryMetadata);
 
+  void downloadDirectories(google::protobuf::Map<std::string, DiSy::DirectoryMetadata> directories);
+  void downloadDirectory(DiSy::DirectoryMetadata &directoryMetadata);
+
 public:
   Client(std::string path, std::string address);
   ~Client();
