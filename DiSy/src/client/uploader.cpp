@@ -24,7 +24,7 @@ void Client::uploadDirectory(DiSy::DirectoryMetadata &directoryMetadata)
 
     if (status.ok())
     {
-        console->info("UploadDirectory success");
+        console->debug("UploadDirectory success {}", directoryMetadata.relative_path());
     }
     else
     {

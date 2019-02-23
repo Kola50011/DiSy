@@ -1,7 +1,9 @@
 #include <grpcpp/grpcpp.h>
 #include <iostream>
 #include <math.h>
+#include <asio.hpp>
 
+#include "shared/asioNetworking.hpp"
 #include "DiSy.pb.h"
 #include "DiSy.grpc.pb.h"
 #include "server/server.hpp"
@@ -11,11 +13,64 @@
 #include "shared/reader.hpp"
 
 using namespace std;
+using namespace asio::ip;
+using asio::error_code;
 
-Server::Server(string _path)
+Server::Server(string _path, int port)
 {
     serverDirTree = crawler::crawlDirectory(_path);
     path = _path;
+
+    asioThread = thread(&Server::startAsioServer, this, port);
+}
+
+Server::~Server()
+{
+    asioThread.join();
+}
+
+void Server::startAsioServer(short unsigned int port)
+{
+    asio::io_context ioContext;
+    tcp::endpoint endpoint{tcp::v4(), port};
+    tcp::acceptor acceptor{ioContext, endpoint};
+    acceptor.listen();
+
+    while (true)
+    {
+        error_code errorCode;
+
+        tcp::socket socket{acceptor.accept(errorCode)};
+
+        if (errorCode)
+        {
+            console->error("Error in socket: {}", errorCode.message());
+            socket.close();
+            continue;
+        }
+
+        networking::MessageType messageType;
+        networking::receiveProtoMessageType(socket, messageType);
+
+        if (messageType == networking::MessageType::File)
+        {
+            DiSy::File file;
+            networking::receiveProtoMessage(socket, file);
+            console->debug("Receive file {}", file.DebugString());
+        }
+        else if (messageType == networking::MessageType::FileMetadata)
+        {
+            DiSy::FileMetadata fileMetadata;
+            networking::receiveProtoMessage(socket, fileMetadata);
+            console->debug("Receive metadata {}", fileMetadata.DebugString());
+        }
+        else
+        {
+            console->debug("Receive invalid message type");
+        }
+
+        socket.close();
+    }
 }
 
 bool areEqual(DiSy::DirectoryMetadata &firstDirectory, DiSy::DirectoryMetadata &secondDirectory)

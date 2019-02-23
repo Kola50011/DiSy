@@ -4,6 +4,7 @@
 #include <grpcpp/grpcpp.h>
 #include <vector>
 #include <string>
+#include <thread>
 
 #include "DiSy.grpc.pb.h"
 #include "DiSy.pb.h"
@@ -14,9 +15,12 @@ private:
   std::string path;
   int nextClientId{0};
   DiSy::DirTree *serverDirTree;
+  std::thread asioThread;
 
   std::shared_ptr<spdlog::logger>
       console{spdlog::stderr_color_mt("server_logger")};
+
+  void startAsioServer(short unsigned int port);
 
 public:
   void updateServerTree(std::string path);
@@ -33,5 +37,6 @@ public:
   grpc::Status SendDirectory(grpc::ServerContext *context, const DiSy::Directory *directory,
                              DiSy::Empty *empty) override;
 
-  Server(std::string path);
+  Server(std::string path, int port);
+  ~Server();
 };

@@ -23,7 +23,7 @@ void Client::downloadDirectory(DiSy::DirectoryMetadata &directoryMetadata)
 
     if (status.ok())
     {
-        console->info("DownloadDirectory success");
+        console->debug("DownloadDirectory success {}", directoryMetadata.relative_path());
     }
     else
     {

@@ -11,6 +11,11 @@ message DirectoryMetadata {
     string relative_path = 1;
 }
 
+message File {
+    FileMetadata metadata = 1;
+    bytes data = 2;
+}
+
 message FileMetadata {
     string relative_path = 1;
     int64 last_modified_time = 2;
@@ -45,8 +50,8 @@ service Server {
     rpc Update(UpdateRequest) returns (UpdateResponse);
 
     rpc GetDirectory(DirectoryMetadata) returns (Directory);
-    rpc GetFile(FileMetadata) returns (Directory);
+    rpc GetFile(FileMetadata) returns (File);
 
     rpc SendDirectory(Directory) returns (Empty);
-    rpc SendFile(Directory) returns (Empty);
+    rpc SendFile(File) returns (Empty);
 }
