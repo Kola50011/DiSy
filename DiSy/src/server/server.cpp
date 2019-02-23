@@ -56,7 +56,8 @@ void Server::startAsioServer(short unsigned int port)
         {
             DiSy::File file;
             networking::receiveProtoMessage(socket, file);
-            console->debug("Receive file {}", file.DebugString());
+            console->debug("Receive file {}", file.metadata().DebugString());
+            (*serverDirTree->mutable_files())[file.metadata().relative_path()] = file.metadata();
         }
         else if (messageType == networking::MessageType::FileMetadata)
         {
@@ -234,6 +235,7 @@ grpc::Status Server::SendDirectory(grpc::ServerContext *context, const DiSy::Dir
     }
 
     writer::writeDirectory(path, directory);
+    (*serverDirTree->mutable_directories())[directory->metadata().relative_path()] = directory->metadata();
 
     return grpc::Status::OK;
 }

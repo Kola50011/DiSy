@@ -29,6 +29,7 @@ inline DiSy::File getFileFromMetadata(DiSy::FileMetadata &fileMetadata, std::str
     std::vector<char> fileData(pos);
     stream.seekg(0, std::ios::beg);
     stream.read(&fileData[0], pos);
+    stream.close();
 
     file.set_data(fileData.data());
 
