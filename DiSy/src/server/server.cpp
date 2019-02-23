@@ -142,6 +142,52 @@ void Server::processUpdate(const DiSy::UpdateRequest *updateRequest,
         }
     }
 
+    for (auto &clientPair : clientDirTree.files())
+    {
+        // File on client but not on server
+        if (serverDirTree->files().find(clientPair.first) == serverDirTree->files().end())
+        {
+            console->debug("New file on server: {}", clientPair.second.relative_path());
+            (*uploads->mutable_files())[clientPair.second.relative_path()] = clientPair.second;
+        }
+        else
+        {
+            // Check timestamps & hash
+            auto serverFileMetadata = serverDirTree->files().at(clientPair.first);
+            auto clientFileMetadata = clientPair.second;
+
+            if (serverFileMetadata.last_modified_time() < clientFileMetadata.last_modified_time() &&
+                serverFileMetadata.hash() != clientFileMetadata.hash())
+            {
+                // Server has older file than client
+                (*uploads->mutable_files())[clientPair.second.relative_path()] = clientPair.second;
+            }
+        }
+    }
+
+    for (auto &serverPair : serverDirTree->files())
+    {
+        // Dir on server but not on client
+        if (clientDirTree.files().find(serverPair.first) == clientDirTree.files().end())
+        {
+            console->debug("File missing on client {}: {}", updateRequest->client_id(), serverPair.second.relative_path());
+            (*downloads->mutable_files())[serverPair.second.relative_path()] = serverPair.second;
+        }
+        else
+        {
+            // Check timestamps & hash
+            auto clientFileMetadata = clientDirTree.files().at(serverPair.first);
+            auto serverFileMetadata = serverPair.second;
+
+            if (serverFileMetadata.last_modified_time() > clientFileMetadata.last_modified_time() &&
+                serverFileMetadata.hash() != clientFileMetadata.hash())
+            {
+                // Server has newer file than client
+                (*downloads->mutable_files())[serverPair.second.relative_path()] = serverPair.second;
+            }
+        }
+    }
+
     updateResponse->set_allocated_uploads(uploads);
     updateResponse->set_allocated_downloads(downloads);
 }

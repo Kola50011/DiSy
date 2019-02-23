@@ -2,10 +2,21 @@
 #include "shared/reader.hpp"
 #include "DiSy.grpc.pb.h"
 #include "DiSy.pb.h"
+#include "shared/asioNetworking.hpp"
 
+#include <asio.hpp>
 #include <string>
 
 using namespace std;
+using namespace asio::ip;
+
+using asio::buffer;
+using asio::error_code;
+using asio::streambuf;
+using asio::write;
+using asio::ip::address;
+using asio::ip::tcp;
+using std::istream;
 
 void Client::uploadDirectories(google::protobuf::Map<string, DiSy::DirectoryMetadata> directories)
 {
@@ -30,4 +41,28 @@ void Client::uploadDirectory(DiSy::DirectoryMetadata &directoryMetadata)
     {
         console->error("UploadDirectory error: {}", status.error_message());
     }
+}
+
+void Client::uploadFiles(google::protobuf::Map<string, DiSy::FileMetadata> files)
+{
+    for (auto &pair : files)
+    {
+        uploadFile(pair.second);
+    }
+}
+
+void Client::uploadFile(DiSy::FileMetadata &fileMetadata)
+{
+    asio::io_context ioContext;
+    error_code errorCode;
+
+    tcp::resolver resolver{ioContext};
+    auto results = resolver.resolve(asioAddress, to_string(asioPort));
+    tcp::socket socket{ioContext};
+
+    asio::connect(socket, results);
+
+    DiSy::File file = reader::getFileFromMetadata(fileMetadata, path);
+    networking::sendProto(socket, file);
+    socket.close();
 }

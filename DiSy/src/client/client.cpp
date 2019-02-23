@@ -32,6 +32,8 @@ void Client::sendUpdate()
 
     uploadDirectories(updateResponse.uploads().directories());
     downloadDirectories(updateResponse.downloads().directories());
+
+    uploadFiles(updateResponse.uploads().files());
 }
 
 int64_t Client::getId()
@@ -52,12 +54,14 @@ int64_t Client::getId()
     return getNewIdResponse.id();
 }
 
-Client::Client(string _path, string address)
+Client::Client(string _path, string grpcAddress, string _asioAddress, int _asioPort)
 {
-    auto channel{grpc::CreateChannel(address, grpc::InsecureChannelCredentials())};
+    auto channel{grpc::CreateChannel(grpcAddress, grpc::InsecureChannelCredentials())};
     stub = DiSy::Server::NewStub(channel);
     clientId = getId();
     path = _path;
+    asioAddress = _asioAddress;
+    asioPort = _asioPort;
 }
 
 Client::~Client() {}

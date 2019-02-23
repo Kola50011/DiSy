@@ -17,6 +17,9 @@ private:
   int64_t clientId;
   std::string path;
 
+  std::string asioAddress;
+  int asioPort;
+
   int64_t getId();
 
   void uploadDirectories(google::protobuf::Map<std::string, DiSy::DirectoryMetadata> directories);
@@ -25,8 +28,11 @@ private:
   void downloadDirectories(google::protobuf::Map<std::string, DiSy::DirectoryMetadata> directories);
   void downloadDirectory(DiSy::DirectoryMetadata &directoryMetadata);
 
+  void uploadFiles(google::protobuf::Map<std::string, DiSy::FileMetadata> files);
+  void uploadFile(DiSy::FileMetadata &fileMetadata);
+
 public:
-  Client(std::string path, std::string address);
+  Client(std::string _path, std::string grpcAddress, std::string _asioAddress, int _asioPort);
   ~Client();
 
   void sendUpdate();
