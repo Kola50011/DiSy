@@ -27,6 +27,9 @@ public:
                         DiSy::GetNewIdResponse *getNewIdResponse) override;
   grpc::Status Update(grpc::ServerContext *context, const DiSy::UpdateRequest *updateRequest,
                       DiSy::UpdateResponse *updateResponse) override;
+
+  grpc::Status GetDirectory(grpc::ServerContext *context, const DiSy::DirectoryMetadata *directoryMetadata,
+                            DiSy::Directory *directory) override;
   grpc::Status SendDirectory(grpc::ServerContext *context, const DiSy::Directory *directory,
                              DiSy::Empty *empty) override;
 

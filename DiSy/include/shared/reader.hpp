@@ -4,7 +4,7 @@
 
 namespace reader
 {
-DiSy::Directory getDirectoryFromMetadata(DiSy::DirectoryMetadata &directoryMetadata)
+inline DiSy::Directory getDirectoryFromMetadata(DiSy::DirectoryMetadata &directoryMetadata)
 {
     DiSy::Directory directory;
     directory.set_relative_path((&directoryMetadata)->relative_path());

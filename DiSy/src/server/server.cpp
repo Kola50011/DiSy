@@ -8,6 +8,7 @@
 #include "shared.hpp"
 #include "shared/crawler.hpp"
 #include "shared/writer.hpp"
+#include "shared/reader.hpp"
 
 using namespace std;
 
@@ -107,6 +108,20 @@ grpc::Status Server::Update(grpc::ServerContext *context, const DiSy::UpdateRequ
     {
         return grpc::Status::CANCELLED;
     }
+}
+
+grpc::Status Server::GetDirectory(grpc::ServerContext *context, const DiSy::DirectoryMetadata *directoryMetadata,
+                                  DiSy::Directory *directory)
+{
+    if (!context)
+    {
+        return grpc::Status::CANCELLED;
+    }
+
+    DiSy::DirectoryMetadata mData = *directoryMetadata;
+    *directory = reader::getDirectoryFromMetadata(mData);
+
+    return grpc::Status::OK;
 }
 
 grpc::Status Server::SendDirectory(grpc::ServerContext *context, const DiSy::Directory *directory,
