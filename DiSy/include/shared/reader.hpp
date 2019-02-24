@@ -21,15 +21,17 @@ inline DiSy::File getFileFromMetadata(DiSy::FileMetadata &fileMetadata, std::str
     DiSy::File file;
     file.set_allocated_metadata(&fileMetadata);
 
-    std::ifstream stream(path + (&fileMetadata)->relative_path(), std::ios::binary | std::ios::ate);
-    std::ifstream::pos_type pos = stream.tellg();
-
-    std::vector<char> fileData(pos);
-    stream.seekg(0, std::ios::beg);
-    stream.read(&fileData[0], pos);
+    char byte;
+    std::string data{};
+    std::ifstream stream(path + (&fileMetadata)->relative_path(), std::ios_base::binary);
+    while (stream)
+    {
+        stream.get(byte);
+        data += byte;
+    }
     stream.close();
 
-    file.set_data(fileData.data());
+    file.set_data(data);
 
     return file;
 }
