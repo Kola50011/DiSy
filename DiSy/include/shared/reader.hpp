@@ -24,13 +24,11 @@ inline DiSy::File getFileFromMetadata(DiSy::FileMetadata &fileMetadata, std::str
     char byte;
     std::string data{};
     std::ifstream stream(path + (&fileMetadata)->relative_path(), std::ios_base::binary);
-    while (stream)
+    while (stream.get(byte))
     {
-        stream.get(byte);
         data += byte;
     }
     stream.close();
-
     file.set_data(data);
 
     return file;
