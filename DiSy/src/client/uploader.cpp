@@ -41,6 +41,7 @@ void Client::uploadDirectory(DiSy::DirectoryMetadata &directoryMetadata)
     {
         console->error("UploadDirectory error: {}", status.error_message());
     }
+    directory.release_metadata();
 }
 
 void Client::uploadFiles(google::protobuf::Map<string, DiSy::FileMetadata> files)
@@ -65,4 +66,7 @@ void Client::uploadFile(DiSy::FileMetadata &fileMetadata)
     DiSy::File file = reader::getFileFromMetadata(fileMetadata, path);
     networking::sendProto(socket, file);
     socket.close();
+
+    file.release_metadata();
+    console->debug("UploadFile success {}", fileMetadata.relative_path());
 }

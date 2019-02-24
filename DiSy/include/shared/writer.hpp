@@ -15,8 +15,7 @@ namespace writer
 {
 void writeDirectory(std::string path, const DiSy::Directory *directory)
 {
-    std::cout << "Write " << path + directory->relative_path() << std::endl;
-    // fs::create_directories(path + directory->relative_path());
+    fs::create_directories(path + directory->relative_path());
 }
 
 void writeFile(std::string path, const DiSy::File *file)

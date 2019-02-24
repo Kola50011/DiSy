@@ -40,7 +40,7 @@ const std::unordered_map<std::type_index, MessageType> typeMapping{
     {typeid(DiSy::FileMetadata), MessageType::FileMetadata},
     {typeid(DiSy::File), MessageType::File}};
 
-int sendProto(tcp::socket &socket, google::protobuf::Message &message)
+inline int sendProto(tcp::socket &socket, google::protobuf::Message &message)
 {
     error_code errorCode;
 
@@ -71,7 +71,7 @@ int sendProto(tcp::socket &socket, google::protobuf::Message &message)
     return SEND_OK;
 }
 
-int receiveProtoMessageType(tcp::socket &socket, MessageType &messageType)
+inline int receiveProtoMessageType(tcp::socket &socket, MessageType &messageType)
 {
     error_code errorCode;
     u_int8_t messageTypeRaw;
@@ -86,7 +86,7 @@ int receiveProtoMessageType(tcp::socket &socket, MessageType &messageType)
     return SEND_OK;
 }
 
-int receiveProtoMessage(tcp::socket &socket, google::protobuf::Message &message)
+inline int receiveProtoMessage(tcp::socket &socket, google::protobuf::Message &message)
 {
     error_code errorCode;
     u_int64_t messageSize;

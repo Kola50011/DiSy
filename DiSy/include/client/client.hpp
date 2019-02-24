@@ -31,6 +31,9 @@ private:
   void uploadFiles(google::protobuf::Map<std::string, DiSy::FileMetadata> files);
   void uploadFile(DiSy::FileMetadata &fileMetadata);
 
+  void downloadFiles(google::protobuf::Map<std::string, DiSy::FileMetadata> files);
+  void downloadFile(DiSy::FileMetadata &fileMetadata);
+
 public:
   Client(std::string _path, std::string grpcAddress, std::string _asioAddress, int _asioPort);
   ~Client();

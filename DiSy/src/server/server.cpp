@@ -56,14 +56,21 @@ void Server::startAsioServer(short unsigned int port)
         {
             DiSy::File file;
             networking::receiveProtoMessage(socket, file);
-            console->debug("Receive file {}", file.metadata().DebugString());
+            console->debug("Receive file {}", file.metadata().relative_path());
             (*serverDirTree->mutable_files())[file.metadata().relative_path()] = file.metadata();
+
+            const DiSy::File *filePointer = &file;
+            writer::writeFile(path, filePointer);
         }
         else if (messageType == networking::MessageType::FileMetadata)
         {
             DiSy::FileMetadata fileMetadata;
             networking::receiveProtoMessage(socket, fileMetadata);
-            console->debug("Receive metadata {}", fileMetadata.DebugString());
+            console->debug("Receive metadata {}", fileMetadata.relative_path());
+
+            auto file = reader::getFileFromMetadata(fileMetadata, path);
+            networking::sendProto(socket, file);
+            file.release_metadata();
         }
         else
         {
@@ -222,7 +229,7 @@ grpc::Status Server::GetDirectory(grpc::ServerContext *context, const DiSy::Dire
 
     DiSy::DirectoryMetadata mData = *directoryMetadata;
     *directory = reader::getDirectoryFromMetadata(mData);
-
+    directory->release_metadata();
     return grpc::Status::OK;
 }
 

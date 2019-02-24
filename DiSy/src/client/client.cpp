@@ -34,6 +34,7 @@ void Client::sendUpdate()
     downloadDirectories(updateResponse.downloads().directories());
 
     uploadFiles(updateResponse.uploads().files());
+    downloadFiles(updateResponse.downloads().files());
 }
 
 int64_t Client::getId()

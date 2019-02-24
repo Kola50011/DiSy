@@ -13,7 +13,6 @@ inline DiSy::Directory getDirectoryFromMetadata(DiSy::DirectoryMetadata &directo
     DiSy::Directory directory;
     directory.set_relative_path((&directoryMetadata)->relative_path());
     directory.set_allocated_metadata(&directoryMetadata);
-    directory.release_metadata(); // without this grpc takes ownership of object -> objects gets deleted too early
     return directory;
 }
 
@@ -21,7 +20,6 @@ inline DiSy::File getFileFromMetadata(DiSy::FileMetadata &fileMetadata, std::str
 {
     DiSy::File file;
     file.set_allocated_metadata(&fileMetadata);
-    file.release_metadata();
 
     std::ifstream stream(path + (&fileMetadata)->relative_path(), std::ios::binary | std::ios::ate);
     std::ifstream::pos_type pos = stream.tellg();
