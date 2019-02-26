@@ -1,0 +1,34 @@
+@startuml
+
+=== GetDirectory ===
+Client -> Server: DirectoryMetadata
+Server -> Client: Directory
+
+=== GetFile ===
+Client -> Server: FileMetadata
+Server -> Client: File
+
+=== SendDirectory ===
+Client -> Server: Directory
+Server -> Client: Empty
+
+=== SendFile ===
+Client -> Server: File
+Server -> Client: Empty
+
+note over Client, Server
+    Updated. Go to 2nd stage
+end note
+
+@enduml
+
+' service Server {
+'     rpc GetNewId(Empty) returns (GetNewIdResponse)
+'     rpc Update(UpdateRequest) returns (UpdateResponse)
+
+'     rpc GetDirectory(DirectoryMetadata) returns (Directory)
+'     rpc GetFile(FileMetadata) returns (File)
+
+'     rpc SendDirectory(Directory) returns (Empty)
+'     rpc SendFile(File) returns (Empty)
+' }

@@ -1,0 +1,57 @@
+@startuml
+
+class Directory {
+    + metadata: DirectoryMetadata
+    + relative_path: string
+}
+
+class DirectoryMetadata {
+    + relative_path: string 
+}
+
+class File {
+    + metadata: FileMetadata 
+    + data: bytes
+}
+
+class FileMetadata {
+    + relative_path: string 
+    + last_modified_time: int64 
+    + hash: string 
+}
+
+class DirTree {
+    + directories: map<string, DirectoryMetadata>
+	+ files: map<string, FileMetadata>
+}
+
+class UpdateRequest {
+    + client_id: int64 
+    + time: int64 
+    + dir_tree: DirTree 
+}
+
+class UpdateResponse {
+    + uploads: DirTree 
+    + downloads: DirTree 
+}
+
+class Empty{
+}
+
+class GetNewIdResponse {
+    + id: int64 
+}
+
+' service Server {
+'     rpc GetNewId(Empty) returns (GetNewIdResponse)
+'     rpc Update(UpdateRequest) returns (UpdateResponse)
+
+'     rpc GetDirectory(DirectoryMetadata) returns (Directory)
+'     rpc GetFile(FileMetadata) returns (File)
+
+'     rpc SendDirectory(Directory) returns (Empty)
+'     rpc SendFile(File) returns (Empty)
+' }
+
+@enduml
