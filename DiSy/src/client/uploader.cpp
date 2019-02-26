@@ -11,7 +11,6 @@ using namespace std;
 using namespace asio::ip;
 
 using asio::buffer;
-using asio::error_code;
 using asio::streambuf;
 using asio::write;
 using asio::ip::address;
@@ -55,7 +54,6 @@ void Client::uploadFiles(google::protobuf::Map<string, DiSy::FileMetadata> files
 void Client::uploadFile(DiSy::FileMetadata &fileMetadata)
 {
     asio::io_context ioContext;
-    error_code errorCode;
 
     tcp::resolver resolver{ioContext};
     auto results = resolver.resolve(asioAddress, to_string(asioPort));

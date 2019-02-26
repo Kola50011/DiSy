@@ -10,7 +10,6 @@
 
 using namespace asio::ip;
 using asio::buffer;
-using asio::error_code;
 using asio::streambuf;
 using asio::write;
 using asio::ip::tcp;
@@ -42,45 +41,24 @@ const std::unordered_map<std::type_index, MessageType> typeMapping{
 
 inline int sendProto(tcp::socket &socket, google::protobuf::Message &message)
 {
-    error_code errorCode;
-
     u_int8_t messageType{toUnderlying(typeMapping.at(typeid(message)))};
-    u_int64_t messageSize{message.ByteSizeLong()};
+    u_int64_t messageSize{message.ByteSize()};
 
-    asio::write(socket, buffer(&messageType, sizeof(messageType)), errorCode);
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
-
-    asio::write(socket, buffer(&messageSize, sizeof(messageSize)), errorCode);
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
+    asio::write(socket, buffer(&messageType, sizeof(messageType)));
+    asio::write(socket, buffer(&messageSize, sizeof(messageSize)));
 
     streambuf streamBuffer;
     ostream outputStream(&streamBuffer);
     message.SerializeToOstream(&outputStream);
-
-    asio::write(socket, streamBuffer, errorCode);
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
+    asio::write(socket, streamBuffer);
     return SEND_OK;
 }
 
 inline int receiveProtoMessageType(tcp::socket &socket, MessageType &messageType)
 {
-    error_code errorCode;
     u_int8_t messageTypeRaw;
 
-    socket.receive(buffer(&messageTypeRaw, sizeof(messageTypeRaw)), 0, errorCode);
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
+    socket.receive(buffer(&messageTypeRaw, sizeof(messageTypeRaw)), 0);
     messageType = static_cast<MessageType>(messageTypeRaw);
 
     return SEND_OK;
@@ -88,24 +66,13 @@ inline int receiveProtoMessageType(tcp::socket &socket, MessageType &messageType
 
 inline int receiveProtoMessage(tcp::socket &socket, google::protobuf::Message &message)
 {
-    error_code errorCode;
     u_int64_t messageSize;
-
-    socket.receive(buffer(&messageSize, sizeof(messageSize)), 0, errorCode);
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
+    socket.receive(buffer(&messageSize, sizeof(messageSize)), 0);
 
     streambuf streamBuffer;
-
     streambuf::mutable_buffers_type mutableBuffer{streamBuffer.prepare(messageSize)};
 
-    streamBuffer.commit(read(socket, mutableBuffer, errorCode));
-    if (errorCode)
-    {
-        return SEND_ERR;
-    }
+    streamBuffer.commit(read(socket, mutableBuffer));
 
     istream inputStream{&streamBuffer};
     message.ParseFromIstream(&inputStream);

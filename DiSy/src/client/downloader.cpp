@@ -57,7 +57,6 @@ void Client::downloadFiles(google::protobuf::Map<string, DiSy::FileMetadata> fil
 void Client::downloadFile(DiSy::FileMetadata &fileMetadata)
 {
     asio::io_context ioContext;
-    error_code errorCode;
 
     tcp::resolver resolver{ioContext};
     auto results = resolver.resolve(asioAddress, to_string(asioPort));
@@ -68,7 +67,9 @@ void Client::downloadFile(DiSy::FileMetadata &fileMetadata)
     networking::sendProto(socket, fileMetadata);
 
     networking::MessageType messageType;
+
     networking::receiveProtoMessageType(socket, messageType);
+
     if (messageType != networking::MessageType::File)
     {
         console->error("Got invalid message type!");
