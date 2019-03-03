@@ -1,0 +1,10 @@
+@startuml
+
+Client -> Server: Empty
+Server -> Client: GetNewIdResponse
+
+note over Client, Server
+    Authenticated
+end note
+  
+@enduml
