@@ -1,10 +1,13 @@
 #include "spdlog/spdlog.h"
 #include "CLI11.hpp"
+#include "json.hpp"
+#include <iostream>
 
 #include "client/client.hpp"
 #include "DiSy.pb.h"
 #include "DiSy.grpc.pb.h"
 
+using json = nlohmann::json;
 using namespace std;
 
 int main(int argc, char const *argv[])
@@ -15,14 +18,34 @@ int main(int argc, char const *argv[])
     string path{"default"};
     string grpcAddress{"0.0.0.0:8080"};
     string asioAddress{"0.0.0.0"};
+    string config{"config.json"};
     int asioPort{8081};
     bool debug{false};
-    app.add_option("-d,--dir", path, "Directory to synchronize")->required()->check(CLI::ExistingDirectory);
+    app.add_option("-d,--dir", path, "Directory to synchronize")->check(CLI::ExistingDirectory);
+    app.add_option("-c,--config", config, "Config file")->check(CLI::ExistingFile);
     app.add_option("-g,--gaddres", grpcAddress, "grpc server address");
     app.add_option("-a,--aaddres", asioAddress, "asio server address");
     app.add_option("-p,--port", asioPort, "asio server port");
     app.add_flag("--debug", debug, "debug messages");
     CLI11_PARSE(app, argc, argv);
+
+    if (config != "")
+    {
+        ifstream configFile(config);
+
+        if (configFile.good())
+        {
+            json j;
+            configFile >> j;
+
+            path = j.value("path", path);
+            grpcAddress = j.value("grpcAddress", grpcAddress);
+            asioAddress = j.value("asioAddress", asioAddress);
+            asioPort = j.value("asioPort", asioPort);
+            debug = j.value("debug", debug);
+            cout << "Config applied" << endl;
+        }
+    }
 
     if (debug)
     {
