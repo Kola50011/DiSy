@@ -1,7 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{for} \PYG{p}{(}\PYG{k}{const} \PYG{n}{string}\PYG{o}{\PYGZam{}} \PYG{n+nl}{dir\PYGZus{}path} \PYG{p}{:} \PYG{n}{get}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{0}\PYG{o}{\PYGZgt{}}\PYG{p}{(}\PYG{n}{file\PYGZus{}tree\PYGZus{}dir\PYGZus{}diff\PYGZus{}}\PYG{p}{))} \PYG{p}{\PYGZob{}}
-	\PYG{n}{send\PYGZus{}directory}\PYG{p}{(}\PYG{n}{sock}\PYG{p}{,} \PYG{n}{dir\PYGZus{}path}\PYG{p}{);}
-\PYG{p}{\PYGZcb{}}
-
-\PYG{n}{send\PYGZus{}protocol\PYGZus{}separator}\PYG{p}{(}\PYG{n}{sock}\PYG{p}{);}
-\end{Verbatim}

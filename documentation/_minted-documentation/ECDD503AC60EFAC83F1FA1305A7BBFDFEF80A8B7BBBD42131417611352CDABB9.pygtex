@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kt}{void} \PYG{n}{Client}\PYG{o}{::}\PYG{n}{sendUpdate}\PYG{p}{()}
+\PYG{p}{\PYGZob{}}
+	\PYG{n}{grpc}\PYG{o}{::}\PYG{n}{ClientContext} \PYG{n}{clientContext}\PYG{p}{;}
+	\PYG{n}{DiSy}\PYG{o}{::}\PYG{n}{UpdateRequest} \PYG{n}{updateRequest}\PYG{p}{;}
+	\PYG{n}{updateRequest}\PYG{p}{.}\PYG{n}{set\PYGZus{}client\PYGZus{}id}\PYG{p}{(}\PYG{n}{clientId}\PYG{p}{);}
+	\PYG{n}{updateRequest}\PYG{p}{.}\PYG{n}{set\PYGZus{}allocated\PYGZus{}dir\PYGZus{}tree}\PYG{p}{(}\PYG{n}{crawler}\PYG{o}{::}\PYG{n}{crawlDirectory}\PYG{p}{(}\PYG{n}{path}\PYG{p}{));}
+	\PYG{n}{updateRequest}\PYG{p}{.}\PYG{n}{set\PYGZus{}time}\PYG{p}{(}\PYG{n}{shared}\PYG{o}{::}\PYG{n}{getCurrentTime}\PYG{p}{());}
+
+	\PYG{n}{DiSy}\PYG{o}{::}\PYG{n}{UpdateResponse} \PYG{n}{updateResponse}\PYG{p}{;}
+	\PYG{n}{grpc}\PYG{o}{::}\PYG{n}{Status} \PYG{n}{status}\PYG{p}{\PYGZob{}}\PYG{n}{stub}\PYG{o}{\PYGZhy{}\PYGZgt{}}\PYG{n}{Update}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{clientContext}\PYG{p}{,} \PYG{n}{updateRequest}\PYG{p}{,} \PYG{o}{\PYGZam{}}\PYG{n}{updateResponse}\PYG{p}{)\PYGZcb{};}
+
+	\PYG{n}{uploadDirectories}\PYG{p}{(}\PYG{n}{updateResponse}\PYG{p}{.}\PYG{n}{uploads}\PYG{p}{().}\PYG{n}{directories}\PYG{p}{());}
+	\PYG{n}{downloadDirectories}\PYG{p}{(}\PYG{n}{updateResponse}\PYG{p}{.}\PYG{n}{downloads}\PYG{p}{().}\PYG{n}{directories}\PYG{p}{());}
+
+	\PYG{n}{uploadFiles}\PYG{p}{(}\PYG{n}{updateResponse}\PYG{p}{.}\PYG{n}{uploads}\PYG{p}{().}\PYG{n}{files}\PYG{p}{());}
+	\PYG{n}{downloadFiles}\PYG{p}{(}\PYG{n}{updateResponse}\PYG{p}{.}\PYG{n}{downloads}\PYG{p}{().}\PYG{n}{files}\PYG{p}{());}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

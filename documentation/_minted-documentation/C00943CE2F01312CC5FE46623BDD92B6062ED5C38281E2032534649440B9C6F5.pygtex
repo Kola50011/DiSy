@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{enum} \PYG{k}{class} \PYG{n+nc}{MessageType}
+\PYG{p}{\PYGZob{}}
+	\PYG{n}{FileMetadata} \PYG{o}{=} \PYG{l+m+mi}{1}\PYG{p}{,}
+	\PYG{n}{File} \PYG{o}{=} \PYG{l+m+mi}{2}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{k}{const} \PYG{n}{std}\PYG{o}{::}\PYG{n}{unordered\PYGZus{}map}\PYG{o}{\PYGZlt{}}\PYG{n}{std}\PYG{o}{::}\PYG{n}{type\PYGZus{}index}\PYG{p}{,} \PYG{n}{MessageType}\PYG{o}{\PYGZgt{}} \PYG{n}{typeMapping}\PYG{p}{\PYGZob{}}
+	\PYG{p}{\PYGZob{}}\PYG{k}{typeid}\PYG{p}{(}\PYG{n}{DiSy}\PYG{o}{::}\PYG{n}{FileMetadata}\PYG{p}{),} \PYG{n}{MessageType}\PYG{o}{::}\PYG{n}{FileMetadata}\PYG{p}{\PYGZcb{},}
+	\PYG{p}{\PYGZob{}}\PYG{k}{typeid}\PYG{p}{(}\PYG{n}{DiSy}\PYG{o}{::}\PYG{n}{File}\PYG{p}{),} \PYG{n}{MessageType}\PYG{o}{::}\PYG{n}{File}\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+\end{Verbatim}

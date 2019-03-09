@@ -1,0 +1,16 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{inline} \PYG{k+kt}{int} \PYG{n+nf}{sendProto}\PYG{p}{(}\PYG{n}{tcp}\PYG{o}{::}\PYG{n}{socket} \PYG{o}{\PYGZam{}}\PYG{n}{socket}\PYG{p}{,} \PYG{n}{google}\PYG{o}{::}\PYG{n}{protobuf}\PYG{o}{::}\PYG{n}{Message} \PYG{o}{\PYGZam{}}\PYG{n}{message}\PYG{p}{)}
+\PYG{p}{\PYGZob{}}
+	\PYG{n}{u\PYGZus{}int8\PYGZus{}t} \PYG{n}{messageType}\PYG{p}{\PYGZob{}}\PYG{n}{toUnderlying}\PYG{p}{(}\PYG{n}{typeMapping}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{k}{typeid}\PYG{p}{(}\PYG{n}{message}\PYG{p}{)))\PYGZcb{};}
+	\PYG{n}{u\PYGZus{}int64\PYGZus{}t} \PYG{n}{messageSize}\PYG{p}{\PYGZob{}}\PYG{n}{message}\PYG{p}{.}\PYG{n}{ByteSizeLong}\PYG{p}{()\PYGZcb{};}
+
+	\PYG{n}{asio}\PYG{o}{::}\PYG{n}{write}\PYG{p}{(}\PYG{n}{socket}\PYG{p}{,} \PYG{n}{buffer}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{messageType}\PYG{p}{,} \PYG{k}{sizeof}\PYG{p}{(}\PYG{n}{messageType}\PYG{p}{)));}
+	\PYG{n}{asio}\PYG{o}{::}\PYG{n}{write}\PYG{p}{(}\PYG{n}{socket}\PYG{p}{,} \PYG{n}{buffer}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{messageSize}\PYG{p}{,} \PYG{k}{sizeof}\PYG{p}{(}\PYG{n}{messageSize}\PYG{p}{)));}
+
+	\PYG{n}{streambuf} \PYG{n}{streamBuffer}\PYG{p}{;}
+	\PYG{n}{ostream} \PYG{n}{outputStream}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{streamBuffer}\PYG{p}{);}
+	\PYG{n}{message}\PYG{p}{.}\PYG{n}{SerializeToOstream}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{outputStream}\PYG{p}{);}
+	\PYG{n}{asio}\PYG{o}{::}\PYG{n}{write}\PYG{p}{(}\PYG{n}{socket}\PYG{p}{,} \PYG{n}{streamBuffer}\PYG{p}{);}
+	\PYG{k}{return} \PYG{n}{SEND\PYGZus{}OK}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

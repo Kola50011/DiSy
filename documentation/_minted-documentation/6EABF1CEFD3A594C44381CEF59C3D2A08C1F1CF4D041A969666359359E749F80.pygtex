@@ -1,7 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{p}{\PYGZob{}}
-	\PYG{n+nt}{\PYGZdq{}strict\PYGZdq{}}\PYG{p}{:} \PYG{k+kc}{true}\PYG{p}{,}
-	\PYG{n+nt}{\PYGZdq{}verbose\PYGZdq{}}\PYG{p}{:} \PYG{k+kc}{true}\PYG{p}{,}
-	\PYG{n+nt}{\PYGZdq{}port\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1337}\PYG{p}{,}
-\PYG{p}{\PYGZcb{}}
-\end{Verbatim}

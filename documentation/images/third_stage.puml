@@ -17,7 +17,7 @@ Client -> Server: File
 Server -> Client: Empty
 
 note over Client, Server
-    Updated. Go to 2nd stage lol hacked nigga 
+    Updated. Go to 2nd stage
 end note
 
 @enduml

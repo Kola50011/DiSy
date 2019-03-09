@@ -7,7 +7,7 @@
 #include "DiSy.pb.h"
 #include "DiSy.grpc.pb.h"
 #include "server/server.hpp"
-#include "shared.hpp"
+#include "shared/shared.hpp"
 #include "shared/crawler.hpp"
 #include "shared/writer.hpp"
 #include "shared/reader.hpp"

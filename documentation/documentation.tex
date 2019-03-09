@@ -1,5 +1,6 @@
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{dirtree}
 \usepackage{titling}
 \usepackage{minted}
 \usepackage{fancyvrb}
@@ -17,10 +18,10 @@
 }
  
 
-\title{dir\_sync}
-\subtitle{Protobuf-powered file synchronization}
-\author{Philip Trauner}
-\date{ }
+\title{DiSy}
+\subtitle{Directory and file synchronization using Protobuf}
+\author{Konstantin Lampalzer}
+\date{}
 
 \begin{document}
  
@@ -62,55 +63,82 @@ DEALINGS IN THE SOFTWARE.
 \newpage
 
 \section{Task}
-Implementation of a networked command-line file synchronization utility. Timestamps and hashes should be utilized for comparison operations.
+Goal of the project is creating a Server-Client system used to synchronize directories and files between multiple network processes. In order to compare the files timestamps and hash values are used
 
 \subsection{Technologies}
-\texttt{dir\_sync} is using features introduced in the C++14 standard and therefor relies on a C++ compiler adhering to this specification. \texttt{g++} (version 6.3.0-18) is used to compile \texttt{dir\_sync} on Debian 9.3 "Stretch" and \texttt{clang} (version 900.0.39.2) is used on macOS 10.13.2.
+\texttt{DiSy} is using features introduced in the C++17 standard and therefor relies on a C++ compiler adhering to this specification. \texttt{g++} (Ubuntu 7.3.0-27ubuntu1~18.04) is used to compile \texttt{DiSy} on Ubuntu 18.04.2 LTS "bionic"..
 
 \begin{table}[h]
 \centering
 \begin{tabular}{l|l}
 Use-Case                      & Technology \\ \hline
 Networking                    & asio       \\
+Networking                    & GRPC       \\
 Logging                       & spdlog     \\
-String formatting             & format     \\
-Command line argument parsing & clipp      \\
+Command line argument parsing & CLI11      \\
 Configuration files           & json       \\
 SHA-512 file hashing          & OpenSSL    \\
-Data exchange format          & Protobuf  
+Data serialization            & Protobuf
 \end{tabular}
 \caption{Used libraries/technologies.}
 \end{table}
 
-All libraries beside OpenSSL were mandatory as by project definition. 
-OpenSSL was chosen for file hashing because no header-only library that supports SHA-512, which was deemed a requirement because SHA-256 is not considered secure anymore, could be located. It is also often pre-installed on common Linux distributions. 
+All libraries beside OpenSSL were mandatory as by project definition. \\
+OpenSSL wach chosen for file hashing, because it supports SHA-512, which is deemed to be securely enough for file hashing. Additionally, it is often preinstalled on most common Linux distributions.
 
 \subsection{Assumptions}
 \begin{enumerate}
-\item Only Unix-like operating system are supported 
+\item Only Unix-like operating systems are supported. It might work on other systems, but the software was only tested on the most recent version of Ubuntu.
 \item The underlying file-system of client and server is the same $\rightarrow$
 \begin{enumerate}
 	\item Maximum path lengths are equal
 	\item Case sensitive / insensitive paths can not be mixed
 \end{enumerate}
-\item No control files exist in regular directories
-\item Both peers have working clocks that are approximately synchronized
-\item Synchronization is not continuous $\rightarrow$
+\item All clients have working clocks that are approximately synchronized
+\item Synchronization is done till a client stops the program$\rightarrow$
 \begin{enumerate}
-	\item Deletion of files is not handled
+	\item Deletion of files is not included
+	\item File rights are not synchronized
+	\item Live editing on multiple clients is not supported
 \end{enumerate}
 \item Conflicts are solved server-side
-\item Forced synchronisation termination can result in inconsistent state
+\item Forced synchronization termination can result in inconsistent state
 \end{enumerate}
 
 
 \section{Implementation}
-\subsection{Code sharing}
-Functions and constants used by server as well as client are defined in a module aptly named \texttt{shared} to prevent needless code duplication. 
+\subsection{Project structure}
+\dirtree{%
+	.1 DiSy.
+	.2 build/:.
+	.2 include/:.
+	.3 client/:\DTcomment{All header files relevant to only the client}.
+	.3 server/:\DTcomment{All header files relevant to only the server}.
+	.3 shared/:\DTcomment{All header files relevant to the server and the client}.
+	.4 asioNetworking.hpp:\DTcomment{Header-only. Handles all the networking done by asio}.
+	.4 crawler.hpp:\DTcomment{Header-only. Responsible for crawling a directory and creating a DirTree object.}.
+	.4 hashing.hpp:\DTcomment{Header-only. Takes a file and retuns the hash of this file.}.
+	.4 reader.hpp:\DTcomment{Header-only. Responsible for reading files from the filesystem and turning them into a byte-array.}.
+	.4 shared.hpp:\DTcomment{Header-only. General shared functions.}.
+	.4 writer.hpp:\DTcomment{Header-only. Writes files from a byte-array to the filesystem.}.
+	.2 src/:.
+	.3 client/:.
+	.4 client.cpp:\DTcomment{All general client-side functionality.}.
+	.4 downloader.cpp:\DTcomment{Downloads files and directories from the server}.
+	.4 main.cpp:\DTcomment{Main entrypoint for the client}.
+	.4 uploader.cpp:\DTcomment{Uploads files and directories to the server}.
+	.3 protos/:
+	.4 DiSy.proto:\DTcomment{Proto message definition file}.
+	.3 server/:
+	.4 main.cpp:\DTcomment{Main entrypoint for the server}.
+	.4 server.cpp:\DTcomment{All general server-side functionality.}.
+	.2 meson.build:\DTcomment{}.
+	.2 meson\_options.txt:\DTcomment{}.
+}
+
 
 \subsection{Recursive directory traversal}
-The \texttt{filesystem} library was introduced into the C++ language standard in 2016. Support is still relatively poor, neither the LLVM toolchain bundled with macOS nor the GNU toolchain bundled with Debian 9.3 include a current non-experimental version of the library. 
-It was decided to sacrifice support of non Unix-like operating systems and use the \texttt{nftw(...)} (\texttt{<ftw.h>}) function instead. It expects a pointer to a function that is called for every item in the file tree it traverses, therefor persistent data has to stored in an overlying scope, which, in this case, is the root scope. To prevent possible data races the \texttt{nftw()} call itself is wrapped in another function that locks a global \texttt{Mutex} on execution.
+The \texttt{filesystem} library was introduced into the C++ language standard in 2016. but support is still relatively poor. Still, it was decided to sacrifice support of systems without the experimental filesystem library, as it provides a hassle-free way to iterate trough all files recursively. Additionally, support will be expanded with the next C++ version, C++20.
 
 \subsection{Protocol Buffers}
 \begin{figure}[H]
@@ -125,41 +153,50 @@ An example of their usage in the actual protocol can be found on page~\pageref{s
 
 \subsection{Command line interface}
 \begin{verbatim}
-SYNOPSIS
-        ./dir_sync_server <directory> [--strict] 
-        			    [--verbose] [-p <port>] [-c <config>]
-        ./dir_sync_client <directory> <address>  
-        			    [--verbose] [-p <port>] [-c <config>]
+DiSy server
+Usage: ./server [OPTIONS]
 
-OPTIONS
-        --strict    do not continue if client is deemed insane
-        --verbose   log additional debug info
-        -p, --port  provide alternative port
+Options:
+-h,--help                   Print this help message and exit
+-g,--gport INT              grpc server port
+-a,--aport INT              asio server port
+-d,--dir DIR REQUIRED       Directory to synchronize
+--debug                     debug messages
 
-        -c, --config
-                    override command line parameters with config
+--------------------------------------------------------------
+
+DiSy client
+Usage: ./client [OPTIONS]
+
+Options:
+    -h,--help                   Print this help message and exit
+    -d,--dir DIR                Directory to synchronize
+    -c,--config FILE            Config file
+    -g,--gaddres TEXT           grpc server address
+    -a,--aaddres TEXT           asio server address
+    -p,--port INT               asio server port
+    -debug                      debug messages
 \end{verbatim}
 
-\texttt{dir\_sync\_server} and \texttt{dir\_sync\_client} provide very similar command line interfaces. The address is not configurable for \texttt{dir\_sync\_server} because its IPv4 socket is automatically bound to 0.0.0.0. 
+\texttt{DiSy server} and \texttt{DiSy client} provide very similar command line interfaces. The address is not configurable for \texttt{DiSy server} because its IPv4 socket is automatically bound to 0.0.0.0.
 \bigbreak
-A configuration file in the \texttt{JSON} file format can also be supplied to substitute optional parameters. All command line options are available as keys.
+A configuration file in the \texttt{JSON} file format can also be supplied instead of parameters on the client:
 
 \begin{figure}[H]
 \begin{minted}[]{json}
 {
-	"strict": true,
-	"verbose": true,
-	"port": 1337,
+	"asioAddress":"0.0.0.0",
+	"asioPort":8081,
+	"debug":false,
+	"grpcAddress":"0.0.0.0:8080",
+	"path":"default"
 }
-
 \end{minted}
 \caption{Example configuration file.}
 \end{figure}
 
 \section{Networking}
-A slim header is perpended to Protobuf messages to determine their length and differentiate between different message types. 
-
-Fixed size unsigned integers are used because their length should be identical between different operating systems and processor architectures. 
+A slim header is perpended to Protobuf messages to determine their length and differentiate between different message types. Fixed size unsigned integers are used because their length should be identical between different operating systems and processor architectures. 
 
 asio's \texttt{mutable\_buffer}s are used to encode all header fields before transmission.
 \begin{figure}[H]
@@ -176,48 +213,44 @@ To cut down on boilerplate code it was decided to utilize lookup tables to dynam
 
 \begin{figure}[H]
 \begin{minted}[]{c++}
-enum class MessageType {
-	FileTree = 1,
-	FileRequest = 2,
-	// ...
+enum class MessageType
+{
+	FileMetadata = 1,
+	File = 2
 };
 
-const unordered_map<type_index, MessageType> proto_type_mapping {
-	{typeid(FileTree), MessageType::FileTree},
-	{typeid(FileRequest), MessageType::FileRequest},
-	// ...
+const std::unordered_map<std::type_index, MessageType> typeMapping{
+	{typeid(DiSy::FileMetadata), MessageType::FileMetadata},
+	{typeid(DiSy::File), MessageType::File}
 };
+
 \end{minted}
 \caption{Shortened lookup table definition.}
 \end{figure}
 
-This decision rules out possible optimizations by the compiler, as message type lookup has to be performed at runtime. While this compromise does result in degraded performance, the difference is insignificant as most processor time will be spent waiting for file I/O operations to complete.
+This decision rules out possible optimizations by the compiler, as message type lookup has to be performed at runtime. While this compromise does result in degraded performance, the difference is insignificant as most processor time will be spent waiting for file I/O operations anyways.
 
 \begin{figure}[H]
-\begin{minted}[]{c++}
-void send_proto(tcp::socket& sock, Message& message) {
-	u_int8_t message_type{to_underlying(
-		proto_type_mapping.at(typeid(message)))};
-	u_int64_t message_size{message.ByteSizeLong()};
-
-	write(sock, buffer(&message_type, U_INT_8_SIZE));
-	write(sock, buffer(&message_size, U_INT_64_SIZE));
-
-	streambuf buf;
-	ostream os(&buf);
-	message.SerializeToOstream(&os);
-
-	write(sock, buf);
+\begin{minted}[]{cpp}
+inline int sendProto(tcp::socket &socket, google::protobuf::Message &message)
+{
+	u_int8_t messageType{toUnderlying(typeMapping.at(typeid(message)))};
+	u_int64_t messageSize{message.ByteSizeLong()};
+	
+	asio::write(socket, buffer(&messageType, sizeof(messageType)));
+	asio::write(socket, buffer(&messageSize, sizeof(messageSize)));
+	
+	streambuf streamBuffer;
+	ostream outputStream(&streamBuffer);
+	message.SerializeToOstream(&outputStream);
+	asio::write(socket, streamBuffer);
+	return SEND_OK;
 }
 \end{minted}
-\caption{Send function (error handling stripped out to reduce length). All Protobuf messages are subclasses of Message.}
+\caption{Send function. All Protobuf messages are subclasses of Message, which is provided by Protobuf.}
 \end{figure}
 
-This design decision implies that the receiving end always knows which message type will be received next, which is not possible in scenarios where the same message type is sent multiple times in a row (\texttt{FileBlock}, \texttt{FileRequest}, ...). A special message type called \texttt{ProtocolSeparator} was introduced to solve this issue. It has no content and is sent to delimit protocol stages.
-\bigbreak
-An example of its usage in the actual protocol can be found on page~\pageref{fig:stage2}.
-\bigbreak
-The \texttt{recv\_proto} function returns a special status code if a \texttt{ProtocolSeparator} has been received instead of the expected message type. It is the responsibility of the application logic to validate the returned status code for each received message.
+Additionally, there are two functions provided to receive the next message type and the message itself. This enables me to easily transfer any message over the network using asio. Only files are transferred over asio, everything else is communicated via gRPC.
 
 \subsection{Protocol phases}
 \label{sec:phases}
@@ -225,12 +258,10 @@ The \texttt{recv\_proto} function returns a special status code if a \texttt{Pro
 \begin{figure}[H]
 \centering
 \includegraphics[width=4.5cm]{first_stage}
-\caption{First phase: Transmission of \texttt{SanityCheck} and \texttt{FileTree}.}
+\caption{First phase: Client requesting an id from the server.}
 \end{figure}
 
-After the client establishes a connection to the server it creates a \texttt{SanityCheck} message and fills it with its current time which is then forwarded to the server. The client is deemed sane if its clock offset relative to the server time is less than five seconds. If the client is deemed insane a warning message is displayed by the server.
-
-The client then traverses all files and directories in the specified folder to compose a \texttt{FileTree} message, which is used by the server to compute which files/directories need the be created/sent/requested.
+After the client establishes a connection to the server it requests an ID from the server. The server then creates an unique ID for the client and sends it back to the client. The client then traverses all files and directories in the specified folder to compose a \texttt{DirTree} message, which is used by the server to compute which files/directories need to be created/sent/requested.
 
 \subsubsection{Second phase}
 \begin{figure}[H]
@@ -240,34 +271,41 @@ The client then traverses all files and directories in the specified folder to c
 \label{fig:stage2}
 \end{figure}
 
-After the server has created all folders that are present in the received \texttt{FileTree} but are missing locally it emits \texttt{DirectoryMetadata} messages filled with directories that have to be created by the client. After all necessary \texttt{DirectoryMetadata} messages have been transmitted a \texttt{ProtocolSeparator} is sent.
+After the client traversed all his local files, he creates an \texttt{UpdateRequest} message containing the current timestamp and the DirTree. The message then computes the difference between the received DirTree and the server DirTree and afterwards sends an \texttt{UpdateResponse} with all the files and directories that need to be uploaded/downloaded by the client.
 
 \begin{figure}[H]
-\begin{minted}[]{c++}
-for (const string& dir_path : get<0>(file_tree_dir_diff_)) {
-	send_directory(sock, dir_path);
+\begin{minted}[]{cpp}
+void Client::sendUpdate()
+{
+	grpc::ClientContext clientContext;
+	DiSy::UpdateRequest updateRequest;
+	updateRequest.set_client_id(clientId);
+	updateRequest.set_allocated_dir_tree(crawler::crawlDirectory(path));
+	updateRequest.set_time(shared::getCurrentTime());
+	
+	DiSy::UpdateResponse updateResponse;
+	grpc::Status status{stub->Update(&clientContext, updateRequest, &updateResponse)};
+	
+	uploadDirectories(updateResponse.uploads().directories());
+	downloadDirectories(updateResponse.downloads().directories());
+	
+	uploadFiles(updateResponse.uploads().files());
+	downloadFiles(updateResponse.downloads().files());
 }
-
-send_protocol_separator(sock);
 \end{minted}
-\caption{Transmission of \texttt{DirectoryMetadata} messages.}
+\caption{Processing of \texttt{UpdateRequest} messages.}
 \end{figure}
 
-Files that are present on the server but missing on the client are handled next. A \texttt{MinimalFileMetadata} message containing the path of the file that is about to be transfered as well as its last modification time-stamp is sent before \SI{65536}{\byte} file parts are transmitted in the form of \texttt{FileResponse} messages. A \texttt{ProtocolSeparator} marks the end of a file. If two consecutive \texttt{ProtocolSeparator}s are received the client assumes that all missing files have been received.
+Directories that are present on the server but missing on the client are handled next. \texttt{DirectoryMetadata} messages are sent to the server next. For every directory request one \texttt{DirectoryMetadata} message is sent. The server responds with a Directory which is then created on the client. These steps are repeated for the FileRequests and then all the requested folders and files from the server are uploaded.
 
-Lastly, the server requests all missing files from the client. 
+Finally, the update phase is completed and the client waits for a bit, till the update is repeated.
 
 
 \subsubsection{Third phase}
 \begin{figure}[H]
 \centering
 \includegraphics[width=4.5cm]{third_stage}
-\caption{Third phase: Files that have been requested by the server are sent by the client.}
+\caption{Third phase: Files and directories are exchanged between the server and the client.}
 \end{figure}
-
-After all \texttt{FileRequest} messages have been received the client sends the requested files in the same manner as the server does in phase two.
-
-\section{Conclusion}
-Just use \texttt{rsync -avP --checksum <source> <destination>}.
 
 \end{document}

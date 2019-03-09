@@ -1,6 +1,6 @@
 #include "client/client.hpp"
 #include "shared/crawler.hpp"
-#include "shared.hpp"
+#include "shared/shared.hpp"
 #include <asio.hpp>
 
 #include "DiSy.grpc.pb.h"
@@ -71,6 +71,12 @@ int64_t Client::getId()
 
 Client::Client(string _path, string grpcAddress, string _asioAddress, int _asioPort)
 {
+    console->info("Client Started: "
+                  "\n\tPath: {}"
+                  "\n\tgRPC address: {}"
+                  "\n\tasio address: {}:{}",
+                  _path, grpcAddress, _asioAddress, _asioPort);
+
     auto channel{grpc::CreateChannel(grpcAddress, grpc::InsecureChannelCredentials())};
     stub = DiSy::Server::NewStub(channel);
     clientId = getId();

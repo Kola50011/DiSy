@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     int asioPort{8081};
     bool debug{false};
     app.add_option("-d,--dir", path, "Directory to synchronize")->check(CLI::ExistingDirectory);
-    app.add_option("-c,--config", config, "Config file")->check(CLI::ExistingFile);
+    app.add_option("-c,--config", config, "Config file");
     app.add_option("-g,--gaddres", grpcAddress, "grpc server address");
     app.add_option("-a,--aaddres", asioAddress, "asio server address");
     app.add_option("-p,--port", asioPort, "asio server port");
@@ -44,6 +44,19 @@ int main(int argc, char const *argv[])
             asioPort = j.value("asioPort", asioPort);
             debug = j.value("debug", debug);
             cout << "Config applied" << endl;
+        }
+        else
+        {
+            json j;
+            j["path"] = path;
+            j["grpcAddress"] = grpcAddress;
+            j["asioAddress"] = asioAddress;
+            j["asioPort"] = asioPort;
+            j["debug"] = debug;
+
+            std::ofstream outfile(config);
+            outfile << j << std::endl;
+            outfile.close();
         }
     }
 

@@ -42,7 +42,7 @@ const std::unordered_map<std::type_index, MessageType> typeMapping{
 inline int sendProto(tcp::socket &socket, google::protobuf::Message &message)
 {
     u_int8_t messageType{toUnderlying(typeMapping.at(typeid(message)))};
-    u_int64_t messageSize{message.ByteSize()};
+    u_int64_t messageSize{message.ByteSizeLong()};
 
     asio::write(socket, buffer(&messageType, sizeof(messageType)));
     asio::write(socket, buffer(&messageSize, sizeof(messageSize)));

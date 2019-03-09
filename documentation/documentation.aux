@@ -5,31 +5,30 @@
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Used libraries/technologies.}}{3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Assumptions}{3}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Implementation}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Code sharing}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Project structure}{4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Recursive directory traversal}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Protocol Buffers}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces All defined Protobuf messages.}}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Command line interface}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example configuration file.}}{5}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Networking}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Header perpended to Protobuf messages.}}{5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Shortened lookup table definition.}}{6}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Send function (error handling stripped out to reduce length). All Protobuf messages are subclasses of Message.}}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Protocol phases}{7}}
-\newlabel{sec:phases}{{4.1}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}First phase}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces First phase: Transmission of \texttt  {SanityCheck} and \texttt  {FileTree}.}}{7}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Second phase}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Second phase: Transmission of directories and files as well as requests for files that are not present on the server.}}{7}}
-\newlabel{fig:stage2}{{7}{7}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Transmission of \texttt  {DirectoryMetadata} messages.}}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Protocol Buffers}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces All defined Protobuf messages.}}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Command line interface}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example configuration file.}}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Networking}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Header perpended to Protobuf messages.}}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Shortened lookup table definition.}}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Send function. All Protobuf messages are subclasses of Message, which is provided by Protobuf.}}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Protocol phases}{8}}
+\newlabel{sec:phases}{{4.1}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}First phase}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces First phase: Client requesting an id from the server.}}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Second phase}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Second phase: Transmission of directories and files as well as requests for files that are not present on the server.}}{8}}
+\newlabel{fig:stage2}{{7}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Processing of \texttt  {UpdateRequest} messages.}}{9}}
 \gdef\minted@oldcachelist{,
   default-pyg-prefix.pygstyle,
   default.pygstyle,
-  6EABF1CEFD3A594C44381CEF59C3D2A08C1F1CF4D041A969666359359E749F80.pygtex,
-  60BCBE30B13DEFBE85C99A303896EE87062ED5C38281E2032534649440B9C6F5.pygtex,
-  8CF4F4E420B069FCB7DE97B68A083439062ED5C38281E2032534649440B9C6F5.pygtex,
-  B21A69F0E699895C67AE508DAEB0A4F1062ED5C38281E2032534649440B9C6F5.pygtex}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Third phase}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Third phase: Files that have been requested by the server are sent by the client.}}{8}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{8}}
+  2A04BF36DD6EC6B66819A6B496D674188C1F1CF4D041A969666359359E749F80.pygtex,
+  C00943CE2F01312CC5FE46623BDD92B6062ED5C38281E2032534649440B9C6F5.pygtex,
+  DBFD9CAB0275924A7AF16ADDC9FAFFD9EF80A8B7BBBD42131417611352CDABB9.pygtex,
+  ECDD503AC60EFAC83F1FA1305A7BBFDFEF80A8B7BBBD42131417611352CDABB9.pygtex}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Third phase}{10}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Third phase: Files and directories are exchanged between the server and the client.}}{10}}
