@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  9 MAR 2019 21:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  10 MAR 2019 15:27
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1249,7 +1249,7 @@ ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on documentation.pdf (11 pages, 168056 bytes).
+Output written on documentation.pdf (11 pages, 168054 bytes).
 PDF statistics:
  72 PDF objects out of 1000 (max. 8388607)
  47 compressed objects within 1 object stream
