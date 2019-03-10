@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
     serverBuilder.RegisterService(&server);
     std::unique_ptr<grpc::Server> serverPtr(serverBuilder.BuildAndStart());
 
-    console->info("Server running on grpc: " + std::to_string(asioPort) + " asio: " + std::to_string(asioPort));
+    console->info("Server running on grpc: " + std::to_string(grpcPort) + " asio: " + std::to_string(asioPort));
     serverPtr->Wait();
 
     return 0;
