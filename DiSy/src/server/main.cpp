@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    Server server = Server(path, asioPort);
+    Server server{path, asioPort};
 
     string grpcAddress = "0.0.0.0:" + std::to_string(grpcPort);
 
