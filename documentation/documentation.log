@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  10 MAR 2019 15:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  10 MAR 2019 16:21
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1211,33 +1211,33 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 <images/first_stage.png, id=36, 221.82875pt x 194.7275pt>
 File: images/first_stage.png Graphic file (type png)
 <use images/first_stage.png>
-Package pdftex.def Info: images/first_stage.png  used on input line 260.
+Package pdftex.def Info: images/first_stage.png  used on input line 263.
 (pdftex.def)             Requested size: 128.0374pt x 112.39232pt.
 <images/second_stage.png, id=37, 206.7725pt x 155.58125pt>
 File: images/second_stage.png Graphic file (type png)
 <use images/second_stage.png>
-Package pdftex.def Info: images/second_stage.png  used on input line 269.
+Package pdftex.def Info: images/second_stage.png  used on input line 272.
 (pdftex.def)             Requested size: 128.0374pt x 96.34067pt.
+ [8 <./images/first_stage.png (PNG copy)>]
 \openout3 = `documentation.pyg'.
 
 
 (./_minted-documentation/ECDD503AC60EFAC83F1FA1305A7BBFDFEF80A8B7BBBD4213141761
-1352CDABB9.pygtex) [8 <./images/first_stage.png (PNG copy)> <./images/second_st
-age.png (PNG copy)>]
+1352CDABB9.pygtex)
 <images/third_stage.png, id=41, 226.8475pt x 562.1pt>
 File: images/third_stage.png Graphic file (type png)
 <use images/third_stage.png>
-Package pdftex.def Info: images/third_stage.png  used on input line 307.
+Package pdftex.def Info: images/third_stage.png  used on input line 310.
 (pdftex.def)             Requested size: 128.0374pt x 317.26117pt.
- [9] [10 <./images/third_stage.png (PNG copy)>]
-(./documentation.aux)
+ [9 <./images/second_stage.png (PNG copy)>] [10 <./images/third_stage.png (PNG 
+copy)>] (./documentation.aux)
 runsystem(rm documentation.pyg)...executed.
 
  ) 
 Here is how much of TeX's memory you used:
  16188 strings out of 492982
  332947 string characters out of 6134895
- 398820 words of memory out of 5000000
+ 397820 words of memory out of 5000000
  19583 multiletter control sequences out of 15000+600000
  537348 words of font info for 48 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1249,7 +1249,7 @@ ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on documentation.pdf (11 pages, 168054 bytes).
+Output written on documentation.pdf (11 pages, 168229 bytes).
 PDF statistics:
  72 PDF objects out of 1000 (max. 8388607)
  47 compressed objects within 1 object stream

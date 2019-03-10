@@ -157,11 +157,11 @@ DiSy server
 Usage: ./server [OPTIONS]
 
 Options:
--h,--help                   Print this help message and exit
--g,--gport INT              grpc server port
--a,--aport INT              asio server port
--d,--dir DIR REQUIRED       Directory to synchronize
---debug                     debug messages
+    -h,--help                   Print this help message and exit
+    -g,--gport INT              grpc server port
+    -a,--aport INT              asio server port
+    -d,--dir DIR REQUIRED       Directory to synchronize
+    --debug                     debug messages
 
 --------------------------------------------------------------
 
@@ -179,6 +179,9 @@ Options:
 \end{verbatim}
 
 \texttt{DiSy server} and \texttt{DiSy client} provide very similar command line interfaces. The address is not configurable for \texttt{DiSy server} because its IPv4 socket is automatically bound to 0.0.0.0.
+\bigbreak
+\texttt{Usage:}\\
+Start the DiSy server. Then start at least two clients. They will now automatically synchronize the supplied parameters.
 \bigbreak
 A configuration file in the \texttt{JSON} file format can also be supplied instead of parameters on the client:
 
