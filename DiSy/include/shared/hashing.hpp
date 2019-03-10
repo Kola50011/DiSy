@@ -8,7 +8,7 @@
 namespace hashing
 {
 
-unsigned long getSizeByFileDescriptor(int fd)
+inline unsigned long getSizeByFileDescriptor(int fd)
 {
     struct stat statbuf;
     if (fstat(fd, &statbuf) < 0)
@@ -16,7 +16,7 @@ unsigned long getSizeByFileDescriptor(int fd)
     return statbuf.st_size;
 }
 
-std::string getFileHash(const char *filePath)
+inline std::string getFileHash(const char *filePath)
 {
     unsigned char hashResult[SHA512_DIGEST_LENGTH];
 

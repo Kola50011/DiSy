@@ -12,7 +12,13 @@ namespace fs = std::experimental::filesystem;
 
 namespace crawler
 {
-DiSy::DirTree *crawlDirectory(std::string path)
+
+inline bool pathExists(std::string path)
+{
+    return fs::is_directory(path);
+}
+
+inline DiSy::DirTree *crawlDirectory(std::string path)
 {
     DiSy::DirTree *dirTree = new DiSy::DirTree();
 

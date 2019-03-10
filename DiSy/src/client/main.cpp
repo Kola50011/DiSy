@@ -7,6 +7,8 @@
 #include "DiSy.pb.h"
 #include "DiSy.grpc.pb.h"
 
+#include "shared/crawler.hpp"
+
 using json = nlohmann::json;
 using namespace std;
 
@@ -63,6 +65,12 @@ int main(int argc, char const *argv[])
     if (debug)
     {
         spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    }
+
+    if (!crawler::pathExists(path))
+    {
+        cerr << "Path " << path << " invalid!" << std::endl;
+        return -1;
     }
 
     Client client = Client(path, grpcAddress, asioAddress, asioPort);

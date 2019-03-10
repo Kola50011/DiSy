@@ -4,6 +4,8 @@
 
 #include "server/server.hpp"
 
+#include "shared/crawler.hpp"
+
 using namespace std;
 
 int main(int argc, char const *argv[])
@@ -25,6 +27,12 @@ int main(int argc, char const *argv[])
     if (debug)
     {
         spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    }
+
+    if (!crawler::pathExists(path))
+    {
+        cerr << "Path " << path << " invalid!" << std::endl;
+        return -1;
     }
 
     Server server = Server(path, asioPort);
